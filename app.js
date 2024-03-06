@@ -4,7 +4,6 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // OKX API URL
-
 const okxApiUrl = 'https://www.okx.com/priapi/v5/market/mult-tickers?instIds=BTC-USDT%2CETH-USDT%2COP-USDT%2CDOGE-USDT%2CSHIB-USDT%2CMEME-USDT%2CLUNA-USDT%2COMG-USDT%2CEOS-USDT%2COKB-USDT%2CXRP-USDT';
 
 const currenciesApiUrl = 'https://www.okx.com/v3/users/common/list/currencies?locale=zh_CN'
