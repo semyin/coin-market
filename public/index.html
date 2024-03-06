@@ -23,6 +23,13 @@
     font-size: 14px;
     color: #929292;
   }
+  @media screen and (max-width: 600px) {
+  /* 隐藏'Change', '24h High', '24h Volume' 列 */
+  th:nth-of-type(5), td:nth-of-type(5),
+  th:nth-of-type(6), td:nth-of-type(6) {
+    display: none;
+  }
+}
 </style>
 </head>
 <body>
@@ -49,7 +56,8 @@ function formatVolume(volume) {
   }
 }
 
-function updateTable(data) {
+function updateTableDesktop(data) {
+  // 这个函数负责更新桌面端的表格
   const table = document.getElementById('data-table');
   // Clear all rows except the header
   table.innerHTML = table.rows[0].innerHTML;
@@ -63,6 +71,40 @@ function updateTable(data) {
     row.insertCell(4).innerHTML = `${item.high24h}<br/><span class="small-text">￥${item.high24hCurrency}</span>`;
     row.insertCell(5).innerHTML = `${formatVolume(item.vol24h)}${item.instId.split('-')[0]}<br/><span class="small-text">￥${formatVolume(item.vol24hCurrency)}</span>`;
   });
+}
+
+function updateTableMobile(data) {
+  // 这个函数负责更新移动端的表格
+  const table = document.getElementById('data-table');
+  // Clear all rows except the header
+  table.innerHTML = table.rows[0].innerHTML;
+  data.forEach(item => {
+    const row = table.insertRow(-1);
+    row.insertCell(0).textContent = item.instId;
+    row.insertCell(1).innerHTML = `${item.last}<br/><span class="small-text">￥${item.lastCurrency}</span>`;
+
+    // 合并'Change' 和 '24h Volume' 数据到一个单元格
+    const changeVolumeCell = row.insertCell(2);
+    const change = (((item.last - item.sodUtc8) / item.sodUtc8) * 100).toFixed(2) + '%';
+    changeVolumeCell.innerHTML = `change: ${change}<br/><span class="small-text">24hv: ${formatVolume(item.vol24h)}${item.instId.split('-')[0]}</span>`;
+
+    // 合并'24h Low' 和 '24h High' 数据到一个单元格
+    const lowHighCell = row.insertCell(3);
+    lowHighCell.innerHTML = `L: ${item.low24h}<br/>H: ${item.high24h}`;
+
+    // 省略'24h High', '24h Volume'列的创建
+  });
+}
+
+function updateTable(data) {
+ // 检测屏幕宽度
+ if (window.innerWidth <= 768) {
+    // 如果屏幕宽度小于或等于768px，执行移动端的函数
+    updateTableMobile(data);
+  } else {
+    // 否则执行桌面端的函数
+    updateTableDesktop(data);
+  }
 }
 
 function fetchDataAndUpdateTable() {
