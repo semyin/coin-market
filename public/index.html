@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKX Market Data</title>
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  table, th, td {
+    border: 1px solid black;
+  }
+  th, td {
+    padding: 8px;
+    text-align: left;
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+  span.small-text {
+    font-size: 14px;
+    color: #929292;
+  }
+</style>
+</head>
+<body>
+<h1>OKX Market Data</h1>
+<table id="data-table">
+  <tr>
+    <th>Name</th>
+    <th>Last Price</th>
+    <th>Change</th>
+    <th>24h Low</th>
+    <th>24h High</th>
+    <th>24h Volume</th>
+  </tr>
+</table>
+<script>
+function formatVolume(volume) {
+  const num = parseFloat(volume);
+  if (num >= 1e8) {
+    return (num / 1e8).toFixed(2) + ' 亿';
+  } else if (num >= 1e4) {
+    return (num / 1e4).toFixed(2) + ' 万';
+  } else {
+    return num.toString();
+  }
+}
+
+function updateTable(data) {
+  const table = document.getElementById('data-table');
+  // Clear all rows except the header
+  table.innerHTML = table.rows[0].innerHTML;
+  data.forEach(item => {
+    const row = table.insertRow(-1);
+    row.insertCell(0).textContent = item.instId;
+    row.insertCell(1).innerHTML = `${item.last}<br/><span class="small-text">￥${item.lastCurrency}</span>`
+    const change = (((item.last - item.sodUtc8) / item.sodUtc8) * 100).toFixed(2) + '%';
+    row.insertCell(2).textContent = change;
+    row.insertCell(3).innerHTML = `${item.low24h}<br/><span class="small-text">￥${item.low24hCurrency}</span>`
+    row.insertCell(4).innerHTML = `${item.high24h}<br/><span class="small-text">￥${item.high24hCurrency}</span>`;
+    row.insertCell(5).innerHTML = `${formatVolume(item.vol24h)}${item.instId.split('-')[0]}<br/><span class="small-text">￥${formatVolume(item.vol24hCurrency)}</span>`;
+  });
+}
+
+function fetchDataAndUpdateTable() {
+  fetch('/data')
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.data) {
+        updateTable(data.data);
+      }
+    })
+    .catch(console.error);
+}
+
+// Fetch data immediately on page load
+fetchDataAndUpdateTable();
+
+// Then continue to fetch data every 5 seconds
+setInterval(fetchDataAndUpdateTable, 5000);
+</script>
+</script>
+</body>
+</html>
