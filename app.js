@@ -46,6 +46,10 @@ const fetchData = async () => {
   }
 };
 
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
+});
+
 // Endpoint to get the latest data
 app.get('/data', async (req, res) => {
   const data = await fetchData();
