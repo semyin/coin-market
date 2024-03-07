@@ -66,11 +66,11 @@ function updateTableDesktop(data) {
     row.insertCell(0).textContent = item.instId;
     row.insertCell(1).innerHTML = `${item.last}<br/><span class="small-text">￥${item.lastCurrency}</span>`
     const change = (((item.last - item.sodUtc8) / item.sodUtc8) * 100).toFixed(2) + '%';
-    row.insertCell(2).textContent = change;
-    row.insertCell(2).style.color = '#31bd65'
+    let color = '#31bd65';
     if (change.includes('-')) {
-      row.insertCell(2).style.color = '#eb4b6d'
+      color = '#eb4b6d'
     }
+    row.insertCell(2).innerHTML = `<span style="color: ${color}">change</span>`;
     row.insertCell(3).innerHTML = `${item.low24h}<br/><span class="small-text">￥${item.low24hCurrency}</span>`
     row.insertCell(4).innerHTML = `${item.high24h}<br/><span class="small-text">￥${item.high24hCurrency}</span>`;
     row.insertCell(5).innerHTML = `${formatVolume(item.vol24h)}${item.instId.split('-')[0]}<br/><span class="small-text">￥${formatVolume(item.vol24hCurrency)}</span>`;
